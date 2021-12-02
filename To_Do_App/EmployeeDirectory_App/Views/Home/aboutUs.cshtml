@@ -1,0 +1,18 @@
+@model System.Collections.Generic.List<string>
+
+<p>About Us...</p>
+@{
+    for (int i = 1; i<11; i++){
+        <div>@i</div>
+    }
+    for (int i = 0; i <Model.Count; i++){
+        <div>@Model[i]</div>
+    }
+}
+
+<script>
+    console.log("@Model[1]");
+</script>
+
+@* in home controller, add new web page called employees but get list of employees from a file (how to read a file in dotnetcore)*@
+@* display list of employees on employees webpage *@

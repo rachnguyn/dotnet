@@ -1,0 +1,305 @@
+﻿
+@{
+    ViewData["Title"] = "Employees Page";
+}
+
+@model EmployeesViewModel
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />  
+    <style>
+
+        #employeeInfo {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            padding-top: 100px; /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        .employeeContent {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            }
+
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            }
+
+        i{
+            width: 50px;
+            background: darken(white,10);
+            color: black;
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 0.2rem;
+            margin-left: 0.5rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0px 10px 10px rgba(0,0,0,0.1);
+        }
+        i:hover{
+            transform: translateY(-0.25rem);
+            box-shadow: 0px 20px 20px rgba(0,0,0,0.1);
+        }
+
+        i:active{
+            background: black;
+            color: white;
+        }
+
+        .selected{
+            background: black;
+            color: white;
+        }
+
+        .hidden{
+            display: none;
+        }
+
+        .card{
+            float: left;
+            margin-left: 10px;
+            margin-bottom: 10px;
+        }
+
+        .profilepic{
+            max-width:100%;
+            max-height:100%;
+            width: 300px;
+            height: 300px;
+        }
+        #employeeCard{
+            margin: auto;
+            width: auto;
+            float: center;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+
+<body>
+
+    @* HTML table *@
+    <div class="text-center">
+        <h1 class="display-4">Employee List</h1>
+    </div>
+    <div class="toggle-btns" style="float: right; margin-bottom: 10px">
+        <i class="fas fa-list active selected" id="toggletable" type="button" onclick="toggleView(event);"></i>
+        <i class="fas fa-th-large" id="togglecard" type="button" onclick="toggleView(event);"></i>
+    </div><br>
+
+    <div id="employeeTable">
+    <table class="table text-center" style="float:center">
+        <tr>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Salary</th>
+            <th> </th>
+        </tr>
+        @* get and display employee info *@
+        @foreach(var line in Model.Employees){
+            <tr>
+                <td class = "clickablerow" data-href="/Employees/Edit/@line.LineNumber">@line.Name</td>
+                <td>@line.Age</td>
+                <td>$@line.Salary</td>
+                <td><button class="btn btn-dark quickview" type="button" id="@line.Name" data-emp_id="@line.LineNumber">Quick View</button></td>
+            </tr>
+    }
+    </table>
+    </div>
+
+    <div id="employeeCard" class="hidden text-center"><br><br>
+        @foreach(var line in Model.Employees){
+            <div class="card" style="width: 16rem;">
+                    <img class="card-img-top profilepic" src="@line.ImageUrl" alt="profilepic">
+                    <div class="card-body">
+                        <h5 class="card-title">@line.Name</h5>
+                        <p class="card-text">
+                            Age: @line.Age <br>
+                            Salary: $@line.Salary
+                        </p>
+                        <button class="btn btn-dark quickview" type="button" id="@line.Name" data-emp_id="@line.LineNumber">Quick View</button>
+                    </div>
+            </div>
+        }
+    </div>
+
+    <div id="employeeInfo">
+        <div class="employeeContent">
+        <span class="close">&times;</span>
+        <label style="font-weight: bold;">Quick View</label>
+            <form>
+                <div class="mb-1">
+                    <label for="employeeName" class="form-label">Name</label>
+                    <input id="name" class="form-control" type="text" name="employeeName">
+                </div>
+                <div class="mb-1">
+                    <label for="employeeAge" class="form-label">Age</label>
+                    <input id="age" class="form-control" type="text" name="employeeAge">
+                </div>
+                <div class="mb-1">
+                    <label for="employeeSalary" class="form-label">Salary</label>
+                    <input id="salary" class="form-control" type="text" name="employeeSalary">
+                </div>
+                <div class="mb-1">
+                    <label for="employeeImg" class="form-label">Image URL</label>
+                    <input id="img" class="form-control" type="text" name="employeeImg"><br>
+                </div>
+                <button class="btn btn-dark updateEmp" type="button">Update</button>
+                <button class="btn btn-dark deleteEmp" type="button">Delete</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+@section Scripts {
+    <script type = "text/javascript">
+
+    jQuery(document).ready(function($) {
+        // if quick view is clicked, show pop up of employee info
+        $(".quickview").click(function(data) {
+            // save employee ID 
+            var empID = $(this).attr('data-emp_id');
+
+            // perform api get request to grab employee info
+             $.getJSON('https://localhost:5001/api/employees/' + empID, function(data){
+                var info = document.querySelector("#employeeInfo");
+                var span = document.getElementsByClassName("close")[0];
+                info.style.display = "inline-block";
+                
+                console.log(data);
+
+                // display employee info in form
+                document.querySelector("#name").value = (data.name);
+                document.querySelector("#age").value = (JSON.stringify(data.age));
+                document.querySelector("#salary").value = (JSON.stringify(data.salary));
+                document.querySelector("#img").value = (data.imageUrl);
+
+                // if update is clicked, update employee using api post method
+                $(".updateEmp").click(function(data) {
+                    // get new info from form
+                    var newName = document.querySelector("#name").value;
+                    var newAge = document.querySelector("#age").value;
+                    var newSalary = document.querySelector("#salary").value;
+                    var newImg = document.querySelector("#img").value;
+
+
+                    // create json employee object
+                    var employee = {
+                        name: newName,
+                        age: parseInt(newAge),
+                        salary: parseInt(newSalary),
+                        imageUrl: newImg,
+                        lineNumber: parseInt(empID)
+                    }
+                    
+                    // send post request to api controller
+                    $.ajax({
+                        url: "https://localhost:5001/api/employees/" + empID,
+                        type: "POST",
+                        data: JSON.stringify(employee),
+                        contentType: "application/json",
+                        success: function(response){
+                            alert("Success! Employee has been updated at " + new Date().toLocaleString() + ". \n" +
+                            "Name: " + response.name + "\n" +
+                            "Age: " + JSON.stringify(response.age) + "\n" +
+                            "Salary: " + JSON.stringify(response.salary) + "\n" +
+                            "Image URL: " + response.imageUrl + "\n" +
+                            "Refresh page for updated table.");
+                        }
+                    });
+                });
+
+                $(".deleteEmp").click(function(data) {
+                        $.ajax({
+                        url: "https://localhost:5001/api/employees/" + empID,
+                        type: "DELETE",
+                        success: function(response){
+                            alert("Success! " + response + new Date().toLocaleString() + 
+                            ". Refresh page for updated table.");
+                        }
+                    });
+                });
+
+                span.onclick = function() {
+                    info.style.display = "none";
+                    }
+                window.onclick = function(event) {
+                if (event.target == info) {
+                    info.style.display = "none";
+                    }
+                }
+            });
+        });
+
+        $(".clickablerow").click(function() {
+            window.location = $(this).data("href");
+        });
+    });
+
+    function toggleView(e){
+        console.log(e.target)
+        if(e.target.id == "toggletable"){
+            document.querySelector("#toggletable").classList.add("active");
+            document.querySelector("#toggletable").classList.add("selected");
+            document.querySelector("#togglecard").classList.remove("active");
+            document.querySelector("#togglecard").classList.remove("selected");
+
+            document.querySelector("#employeeTable").classList.remove("hidden");
+            document.querySelector("#employeeCard").classList.add("hidden");
+
+        } else if (e.target.id == "togglecard"){
+            document.querySelector("#togglecard").classList.add("active");
+            document.querySelector("#togglecard").classList.add("selected");
+            document.querySelector("#toggletable").classList.remove("active");
+            document.querySelector("#toggletable").classList.remove("selected");
+
+            document.querySelector("#employeeCard").classList.remove("hidden");
+            document.querySelector("#employeeTable").classList.add("hidden");
+        }
+    }
+    @* // serialize Model into Javascript JSON obj
+    var emps = JSON.parse('@Html.Raw(Json.Serialize(Model.Employee))');
+    console.log(emps);
+
+    // when employee is clicked, open Employees/Edit and display employee info in form
+    function displayInfo(row){
+        const editPage = window.open('https://localhost:5001/Employees/Edit');  // open Employees/Edit in new window
+
+        editPage.addEventListener('DOMContentLoaded', () => {
+        // now we can access the input elements on the other page
+            var nameTag = editPage.document.querySelector('#nameTag');
+            var ageTag = editPage.document.querySelector('#ageTag');
+            var salaryTag = editPage.document.querySelector('#salaryTag');
+            var numTag = editPage.document.querySelector('#lineNum');
+
+        // check which employee was clicked, then display specified data 
+            for (var i = 0; i < emps.length; i++){
+                if (row.id == emps[i].name){
+                    nameTag.value = emps[i].name;
+                    ageTag.value = emps[i].age;
+                    salaryTag.value = emps[i].salary;
+                    numTag.value = emps[i].lineNumber;
+                    break;
+                }
+            }
+        })
+    } *@
+    </script>
+}

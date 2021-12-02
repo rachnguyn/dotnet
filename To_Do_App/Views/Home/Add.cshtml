@@ -1,0 +1,129 @@
+@* action for form sends to same url on default *@
+<h1>Add Task</h1>
+<style>
+    .errorTxt{
+        color: #e05a5a;
+    }
+    .error{
+        color: #e05a5a;
+    }
+</style>
+
+@if (Model != null) {
+    <form method="post" id="myForm">
+        <input id="newtask" name="item" type="text" class="form-control col-sm" placeholder="Add item here..." required><br>
+        <select name="user" class="form-control-chosen col-sm" style="width:15px;" data-placeholder="User..." required>
+            <option selected disabled value="">User...</option>
+            <option>Naruto</option>
+            <option>Sasuke</option>
+            <option>Itachi</option>  
+            <option>Hinata</option>             
+            <option>Shikamaru</option>             
+        </select><br><br>
+        <select name="priority" class="newpriority form-select form-control-chosen col-sm" data-placeholder="Priority...">
+            <option selected disabled value="">Priority...</option>
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+        </select><br><br>
+        <input id="datefortask" name="date" class="form-control col-sm" type="date"><br>
+        <input name="actionButton" type="submit" class="btn btn-info" value="Add">
+        <input name="actionButton" type="submit" class="btn btn-danger" value="Delete" onclick="return confirmBox();">
+        <div style="position: relative; top: 15px;" class="errorTxt"></div>
+    </form>
+}
+
+else {
+    <form method="post" id="myForm">
+        <input id="newtask" name="item" type="text" class="form-control col-sm" placeholder="Add item here..." required>
+        <label for="item" generated="true" class="error col-sm"></label>
+
+        <select name="user" class="form-control-chosen col-sm" data-placeholder="User..." required>
+            <option selected disabled value="">User...</option>
+            <option>Naruto</option>
+            <option>Sasuke</option>
+            <option>Itachi</option>  
+            <option>Hinata</option>             
+            <option>Shikamaru</option>             
+        </select><br>
+        <label for="user" generated="true" class="error"></label>
+
+        <select name="priority" class="newpriority form-select form-control-chosen col-sm" data-placeholder="Priority...">
+            <option selected disabled value="">Priority...</option>
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+        </select><br><br>
+
+        <input name="date" class="form-control col-sm" type="date">
+        <label for="date" generated="true" class="error"></label>
+
+        <br><input name="actionButton" type="submit" class="btn btn-info" value="Add">
+        <input name="actionButton" type="submit" class="btn btn-danger" value="Delete" onclick="return confirmBox();">
+        <div style="position: relative; top: 15px;" class="errorTxt"></div>
+    </form>
+}
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
+    <script type="text/javascript">
+
+    $('.form-control-chosen').chosen({
+        // Chosen options here
+    });
+
+
+    $.validator.setDefaults({ ignore: ":hidden:not(select)" })
+
+    var validator = $("#myForm").validate({
+        rules: {
+            item: {
+                required: true,
+                minlength: 3,
+            },
+            user: "required"
+        },
+        messages: {
+            item: "Enter a task.",
+            user: "Select a user.",
+            date: "Select a due date."
+        },
+    });
+
+     @* $("#myForm").validate({ 
+        errorPlacement: function(error, element) {
+            if(element.attr("name") == "task"){
+                error.appendTo('#newtask');
+                return;
+            }
+
+            if(element.attr("name") == "user"){
+                    error.appendTo('#userfortask');
+                    return;
+            }else {
+                error.appendTo("#datefortask");
+            }
+        }
+    }); *@
+
+    $(".newpriority").change(function() {
+        var pValue = $(this).val();
+        if (pValue == "High"){
+            console.log("hi");
+            $("input[name='date']").rules("add", "required");
+        }
+        else{
+            $("input[name='date']").rules("remove", "required");
+        }
+    });
+
+    function confirmBox(){
+        if (confirm("Are you sure?")){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }   
+    </script>
+}

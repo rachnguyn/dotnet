@@ -1,0 +1,417 @@
+﻿@{
+    ViewData["Title"] = "To Do List";
+}
+
+<div class="text-center">
+    <h1 class="display-4">To Do List</h1>
+</div>
+
+<style>
+    .errorTxt{
+        min-height: 20px;
+        color: #ff7a7a;
+        }
+    .floatleft{
+        display: flex;
+        flex-direction: row;
+    }
+
+    .hidden{
+        display: none;
+    }
+
+    .card {
+        margin-bottom:10px;
+    }
+    @@media screen and (max-width: 750px) {
+        .taskCards {display: inline-block}
+        .listView {display: none}
+        .tasklist {display: none}
+    }
+    .High {
+        color:#F07C7C;
+    }
+    .Medium {
+        color:#FFC300;
+    }
+    .Low {
+        color:#79DE77;
+    }
+}
+</style>
+<table id="tasktable" class="table table-dark table-bordered table-striped table-hover">
+    <tr>
+            <td colspan="6">
+                <form method="post" id="myForm">
+                    <div class="row gx-2">
+                        <div class="col-md-4">
+                            <input id="newtask" name="item" type="text" class="form-control" placeholder="Add item here..." required>
+                        </div>
+                        <div class="col-md-2">
+                            <select name="user" class="form-control-chosen" data-placeholder="User..." required>
+                                <option selected disabled value="">User...</option>
+                                <option>Naruto</option>
+                                <option>Sasuke</option>
+                                <option>Itachi</option>  
+                                <option>Hinata</option>             
+                                <option>Shikamaru</option>             
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select name="priority" class="col-sm-2 newpriority form-select form-control-chosen" data-placeholder="Priority...">
+                                <option selected disabled value="">Priority...</option>
+       0                         <option>Low</option>
+                                <option>Medium</option>
+                                <option>High</option>
+                            </select>
+                        </div>
+                        <div class="input-group col-md-4">           
+                            <input name="date" class="form-control" type="date">  
+                            <div class="input-group-append">
+                                <input name="actionButton" type="submit" class="btn btn-info" value="Add">
+                            </div>
+                        </div>
+                    </div>
+                    <div style="position: relative; top: 5px;" class="errorTxt"></div>
+                </form>
+            </td>
+    </tr>
+        <tr class="listView">
+            <th scope="col"><input type="checkbox" style="visibility:hidden;"></th>
+            <th scope="col" id="descriptionheader" style="width:50%; text-align:center;">Description</th>
+            <th scope="col" style="text-align:center;">User</th>
+            <th scope="col" style="text-align:center;" onclick="sortPriority();">Priority</th>
+            <th scope="col" style="text-align:center;" id="sortByDate">Due Date</th>
+            <th scope="col"><input type="button" value="Delete" class="btn btn-danger" style="visibility:hidden;"></th>
+        </tr>
+    <tbody class="tasklist">
+    @if (Model != null) {
+        @foreach(var item in Model){
+                <tr class="fromhome">
+                    <td><input class="checkbox" type="checkbox" checked="@item.Is_Done" data-checkbox-id="@item.ID" data-href="/Home/ToggleIsDone/@item.ID"></td>
+                    <td data-href="/Home/Index/@item.ID" class="description" id="@item.ID">@item.Description</td>
+                    <td style="text-align:center;" name="user">@item.User</td>
+                    <td style="text-align:center;" class="priority" data-priority="@item.Priority">@item.Priority</td>
+                    <td><input class="date" data-date_ID="@item.ID" type="date" value="@item.Due_Date" style="text-align:right;"></td>
+                    <td><a href="/Home/Delete/@item.ID" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</a></td>
+                </tr>
+        }
+    }
+    </tbody>
+</table>
+
+<div class="taskCards hidden w-100">
+    @if (Model != null) {
+        @foreach(var item in Model){
+            <div class="card bg-dark text-white" style="width:100%;">
+                <div class="card-body">
+                    <h5 style="display: inline-block;" class="card-title">@item.Description</h5> 
+                    <input style="display: inline-block; float:right;" class="checkbox checkboxcard" type="checkbox" checked="@item.Is_Done" data-checkbox-id="@item.ID" data-href="/Home/ToggleIsDone/@item.ID">
+                    <h6 class="card-subtitle mb-2" style="color:#BABABA;">Appointed to @item.User</h6>
+                    <p class="card-text">
+                        <div style="font-weight:bold; display: inline-block">Priority:</div> <div class="@item.Priority" style="display: inline-block"> @item.Priority </div><br>
+                        <div style="font-weight:bold; display: inline-block">Due Date:</div> <div style="display: inline-block"> <input class="dateCard" data-date_ID="@item.ID" type="date" value="@item.Due_Date"> </div><br>
+                    </p>
+                    <a href="/Home/Delete/@item.ID" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
+    <script type="text/javascript">
+
+        $('.form-control-chosen').chosen({
+            // Chosen options here
+        });
+
+        $.validator.setDefaults({ ignore: ":hidden:not(select)" })
+
+        var validator = $("#myForm").validate({
+            rules: {
+                item: {
+                    required: true,
+                    minlength: 3,
+                },
+                user: "required"
+            },
+            messages: {
+                item: "Enter a task.",
+                user: "Select a user.",
+                date: "Select a due date."
+            },
+            errorElement : 'div',
+            errorLabelContainer: '.errorTxt'
+        });
+
+        $(".newpriority").change(function() {
+            var pValue = $(this).val();
+            if (pValue == "High"){
+                console.log("hi");
+                $("input[name='date']").rules("add", "required");
+            }
+            else{
+                $("input[name='date']").rules("remove", "required");
+            }
+        });
+
+        $(document).ready(function() {
+            $(".priority").each(function() {
+                var pValue = $(this).attr('data-priority');
+                if (pValue == "Low"){
+                    console.log("hello");
+                    this.style.backgroundColor = "green";
+                }
+                if (pValue == "Medium"){
+                    this.style.backgroundColor = "orange";
+                }
+                if (pValue == "High"){
+                    this.style.backgroundColor = "red";
+                }
+            });
+        });
+
+        $(".checkbox").click(function(data) {
+            console.log("Item is completed!");
+            var checkboxID = $(this).attr('data-checkbox-id');
+            var todo = document.getElementById(checkboxID);
+            if (this.checked == true){
+                todo.style.textDecoration = "line-through";
+                window.location = "/Home/Delete/" + checkboxID;
+            }
+            else{
+                todo.style.textDecoration = "none";
+            }
+
+        });
+
+        $(".date").change(function(data) {
+            var id = $(this).attr('data-date_id');
+            var newdate = this.value;
+            console.log(newdate);
+            $.post('/Home/ChangeDate', { date: newdate, itemnum: id }, function (result) {
+                console.log("Successfuly changed due date!");
+            });
+        });
+
+        // set date order direction
+        // 0 = unordered
+        // 1 = low to high
+        // 2 = high to low 
+        var dateSort = 0; 
+
+        // convert date string --> numeric date 
+        // ex. "10-08-2021" --> 20211008
+        function convertDate(d){
+            var p = d.split("-");
+            return (p[0]+p[1]+p[2]);         
+        }
+
+        // sorts rows based on date from low to high or high to low 
+        function sortByDate() {
+            console.log("Sorting...");
+
+            // get trs (rows) as elements to sort
+            var tbody = document.querySelector(".tasklist");
+            var rows = [].slice.call(tbody.querySelectorAll(".fromhome"));
+            console.log(rows);
+
+            // skip first two rows (header + add item)
+            @* const firstElement = rows.shift();
+            const secondElement = rows.shift(); *@
+
+            // get input date elements
+            var dateNodes;
+            for (let i = 0; i < rows.length; i++){
+                // saves all date elements to nodelist
+                dateNodes = (document.querySelectorAll('.date'));   
+            }
+            // convert nodelist to array
+            const dateArray = Array.from(dateNodes);               
+
+            // "10-21-2021" --> "20211021"
+            var dateValueArray = [];
+            for (let i = 0; i < dateArray.length; i++){
+                dateValueArray.push(convertDate(dateArray[i].value));
+            }
+
+            // if unsorted or sorted low to high --> sort low to high
+            if (dateSort != 1){
+                // sorts rows the same order that dates (filled with numeric date values) are sorted
+                bubbleSort(dateValueArray, rows, "low");
+                dateSort = 1;
+            }
+            // if sorted low to high --> sort high to low
+            else{
+                bubbleSort(dateValueArray, rows, "high");
+                dateSort = 2;
+            }
+
+            // move elements
+            rows.forEach(function(v) {
+                tbody.appendChild(v); 
+            });
+            
+        }
+
+        // sorts two arrays in ascending or descending order based on order value
+        function bubbleSort(array, array2, order) {
+            var done = false;
+            while (!done) {
+                done = true;
+                // low to high sorting
+                if (order == "low"){
+                    for (var i = 1; i < array.length; i += 1) {
+                        if (array[i-1] > array[i]) {
+                            done = false;
+                            var tmp = array[i-1];
+                            var tmp2 = array2[i-1];
+                            array[i-1] = array[i];
+                            array2[i-1]=array2[i];
+                            array[i] = tmp;
+                            array2[i]=tmp2;
+                        }
+                    }
+                }
+                // high to low sorting
+                else{
+                    for (var i = 1; i < array.length; i += 1) {
+                        if (array[i-1] < array[i]) {
+                            done = false;
+                            var tmp = array[i-1];
+                            var tmp2 = array2[i-1];
+                            array[i-1] = array[i];
+                            array2[i-1]=array2[i];
+                            array[i] = tmp;
+                            array2[i]=tmp2;
+                        }
+                    }
+                }
+            }
+        }
+
+        // when date column is clicked --> sort by date 
+        document.querySelector("#sortByDate").addEventListener("click", sortByDate);
+
+        // get first two rows of table (header + add item row)
+        var tbody2 = document.querySelector("#tasktable tbody");
+        var fsrow = [].slice.call(tbody2.querySelectorAll("tr"));
+        fsrow = fsrow.slice(0, 2);
+
+        // set priority order direction 
+        // 0 = unsorted
+        // 1 = high to low
+        // 2 = low to high
+        var priorityDirection = 0;
+        function sortPriority(){
+            // if not sorted high to low --> sort high to low
+            if (priorityDirection != 1) {
+                // get sorted tasks thru ajax request 
+                $.ajax({
+                url: 'https://localhost:5001/api/tasks/sorthightolow',
+                type: "GET",
+                success: function(list){
+                    // remove original rows
+                    $(".fromhome").remove();
+                    // create an array to store html of the new rows
+                    var newrows = [];
+                    // for each task, create html for its row (checkbox + item + user + date + delete) and push to array
+                    for (let i = 0; i<list.length; i++){
+                        newrows.push('<tr class="fromhome"> <td><input class="checkbox" type="checkbox" data-checkbox-id="'+ 
+                        (list[i].id) + '"></td> <td data-href="/Home/Index/' + (list[i].id) + '" class="description" id="' + (list[i].id) +
+                        '">'+ (list[i].description) + '</td> <td style="text-align:center;" name="user">' + (list[i].user) + 
+                        '</td><td style="text-align:center;" class="priority" data-priority="' + (list[i].priority) + '">' + (list[i].priority) + 
+                        '</td><td><input class="date" data-date_ID="' + (list[i].id) + '" type="date" value="' + (list[i].dueDate) + 
+                        '" style="text-align:right;"></td><td><a href="/Home/Delete/' + (list[i].id) + '" class="btn btn-danger" onclick="return confirm("Are you sure?")">Delete</a></td></tr>');
+                    }
+                    // add html to tbody
+                    $('.tasklist').html(newrows.join('')); 
+
+                    // color priority
+                    $(".priority").each(function() {
+                    var p = $(this).attr('data-priority');
+                        if (p == "Low"){
+                            console.log("hello");
+                            this.style.backgroundColor = "green";
+                        }
+                        if (p == "Medium"){
+                            this.style.backgroundColor = "orange";
+                        }
+                        if (p == "High"){
+                            this.style.backgroundColor = "red";
+                        }
+                    });
+                    }
+                });
+                priorityDirection = 1;
+            }
+            // if unsorted or sorted high to low --> sort low to high
+            else {
+                // get sorted tasks thru ajax request 
+                $.ajax({
+                url: 'https://localhost:5001/api/tasks/sortlowtohigh',
+                type: "GET",
+                success: function(list){
+                    // remove original rows
+                    $(".fromhome").remove();
+                    // create array to store html of new rows
+                    var newrows = [];
+                    // for each task, create html for its row 
+                    for (let i = 0; i<list.length; i++){
+                        newrows.push('<tr class="fromhome"> <td><input class="checkbox" type="checkbox" data-checkbox-id="'+ 
+                        (list[i].id) + '"></td> <td data-href="/Home/Index/' + (list[i].id) + '" class="description" id="' + (list[i].id) +
+                        '">'+ (list[i].description) + '</td> <td style="text-align:center;" name="user">' + (list[i].user) + 
+                        '</td><td style="text-align:center;" class="priority" data-priority="' + (list[i].priority) + '">' + (list[i].priority) + 
+                        '</td><td><input class="date" data-date_ID="' + (list[i].id) + '" type="date" value="' + (list[i].dueDate) + 
+                        '" style="text-align:right;"></td><td><a href="/Home/Delete/' + (list[i].id) + '" class="btn btn-danger" onclick="return confirm("Are you sure?")">Delete</a></td></tr>');
+                    }
+                    // add html to tbody
+                    $('.tasklist').html(newrows.join('')); 
+
+                    // color priority 
+                    $(".priority").each(function() {
+                    var p = $(this).attr('data-priority');
+                        if (p == "Low"){
+                            console.log("hello");
+                            this.style.backgroundColor = "green";
+                        }
+                        if (p == "Medium"){
+                            this.style.backgroundColor = "orange";
+                        }
+                        if (p == "High"){
+                            this.style.backgroundColor = "red";
+                        }
+                    });
+                    }
+                });
+                priorityDirection = 2;
+            }
+        }
+
+
+
+
+        @* (function () {
+            'use strict'
+
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.querySelectorAll('.needs-validation')
+
+            // Loop over them and prevent submission
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                    }
+
+                    form.classList.add('was-validated')
+                }, false)
+                })
+        })() *@
+
+    </script>
+}

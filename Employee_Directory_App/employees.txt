@@ -1,0 +1,5 @@
+Naruto Uzumaki,19,999999,https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/6796fe47-907a-4f6f-8075-8722ea4708d1/db5amgn-2f9110f7-e90e-49d4-b0c8-83699dfaa3fb.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzY3OTZmZTQ3LTkwN2EtNGY2Zi04MDc1LTg3MjJlYTQ3MDhkMVwvZGI1YW1nbi0yZjkxMTBmNy1lOTBlLTQ5ZDQtYjBjOC04MzY5OWRmYWEzZmIucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.Xw2iXJBKewabaaNa_pr5VmVdJssKmPFsYOujwUV-jgk
+Sasuke Uchiha,18,888888,https://comicvine.gamespot.com/a/uploads/original/11130/111308139/6526885-uchiha-sasuke-png-transparent-picture.png
+Hinata Hyuga,17,777777,https://preview.redd.it/yajawa4x8nw41.jpg?width=960&crop=smart&auto=webp&s=0e2b7a1fe026349c6a2fcb03b1ac9cc52ddb725a
+Itachi Uchiha,21,666666,https://numeralpaint.com/wp-content/uploads/2020/07/itachi-uchiha-adult-paint-by-numbers.jpg
+Nara Shikamaru,20,555555,https://discourse.disneyheroesgame.com/uploads/default/original/3X/2/9/29ae564c026d4a2ef34ba21ce3e0a3dfd0b7c84c.png

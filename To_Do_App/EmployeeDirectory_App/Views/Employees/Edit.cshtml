@@ -1,0 +1,60 @@
+@* action for form sends to same url on default *@
+<h1>Add Info</h1>
+@if (Model != null) {
+    <form method="post">
+        <div class="mb-1">
+            <label for="name" class="form-label">Name</label>
+            <input id="nameTag" class="form-control" type="text" name="employeeName" value="@Model.Name">
+        </div>
+        <div class="mb-1">
+            <label for="age" class="form-label">Age</label>
+            <input id="ageTag" class="form-control" type="text" name="employeeAge" value="@Model.Age">
+        </div>
+        <div class="mb-1">
+            <label for="age" class="form-label">Salary</label>
+            <input id="salaryTag" class="form-control" type="text" name="employeeSalary" value="@Model.Salary">
+        </div>
+        <div class="mb-1">
+            <label for="img" class="form-label">Image Link</label>
+            <input id="imgTag" class="form-control" type="text" name="employeeImg" value="@Model.ImageUrl"><br>
+        </div>
+        <input class="btn btn-dark" type="submit" value="Add" name="actionButton">
+        <input class="btn btn-dark" type="submit" value="Update" name="actionButton">
+        <input class="btn btn-dark" id="delete" type="submit" value="Delete" name="actionButton" onclick="return confirmBox();">
+    </form>
+}
+
+else {
+    <form method="post">
+        <div class="mb-1">
+            <label for="name" class="form-label">Name</label>
+            <input id="nameTag" class="form-control" type="text" name="employeeName">
+        </div>
+        <div class="mb-1">
+            <label for="age" class="form-label">Age</label>
+            <input id="ageTag" class="form-control" type="text" name="employeeAge">
+        </div>
+        <div class="mb-1">
+            <label for="age" class="form-label">Salary</label>
+            <input id="salaryTag" class="form-control" type="text" name="employeeSalary">
+        </div>
+        <div class="mb-1">
+            <label for="img" class="form-label">Image Link</label>
+            <input id="imgTag" class="form-control" type="text" name="employeeImg"><br>
+        </div>
+        <input class="btn btn-dark" type="submit" value="Add" name="actionButton">
+        <input class="btn btn-dark" type="submit" value="Update" name="actionButton">
+        <input class="btn btn-dark" id="delete" type="submit" value="Delete" name="actionButton" onclick="return confirmBox();">
+    </form>
+}
+
+<script>
+    function confirmBox(){
+        if (confirm("Are you sure?")){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+</script>
